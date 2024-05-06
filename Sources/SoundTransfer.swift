@@ -10,11 +10,12 @@ import Foundation
 @main
 struct SoundTransfer: ParsableCommand {
     mutating func run() throws {
-
+        let podcasts = readPodcastFile(nameFile: "listOfSounds.json")
+        print(podcasts)
     }
 }
 
-func downloadFile( nameFile:String, urlYouTube:String) {
+func downloadFile(nameFile: String, urlYouTube: String) {
     let task = Process()
     let executableUrl = URL(fileURLWithPath: "/usr/local/bin/yt-dlp") 
     task.executableURL = executableUrl
