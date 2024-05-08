@@ -9,10 +9,18 @@ import Foundation
 
 @main
 struct SoundTransfer: ParsableCommand {
+    @Option(help:"Download files to following folder")
+    var downloadFolder:String
+
     mutating func run() throws {
-        let podcasts = readPodcastFile(nameFile: "listOfSounds.json")
-        print(podcasts)
+        let listOfNamesFile:String = "listOfSounds.json"
+        download(listOfNamesFile)
     }
+}
+
+func download(_ listOfNamesFile:String){
+    let podcastList = readPodcastFile(nameFile:listOfNamesFile)
+
 }
 
 func downloadFile(nameFile: String, urlYouTube: String) {
@@ -44,4 +52,3 @@ func downloadFile(nameFile: String, urlYouTube: String) {
 
     print("File downloaded ")
 }
-
