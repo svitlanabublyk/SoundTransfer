@@ -14,13 +14,17 @@ struct SoundTransfer: ParsableCommand {
 
     mutating func run() throws {
         let listOfNamesFile: String = "listOfSounds.json"
-        download(listOfNamesFile)
+        download(listOfNamesFile, downloadFolder)
     }
 }
 
-func download(_ listOfNamesFile: String) {
+func download(_ listOfNamesFile: String, _ folder: String) {
     let podcastList = readPodcastFile(nameFile: listOfNamesFile)
-
+    for podcast in podcastList {
+        let name = folder + "/" + podcast.name
+        let url = podcast.URL
+        downloadFile(nameFile: name, urlYouTube: url)
+    }
 }
 
 func downloadFile(nameFile: String, urlYouTube: String) {
