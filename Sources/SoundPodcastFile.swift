@@ -3,6 +3,12 @@ import Foundation
 struct Episode: Codable {
   var name: String
   var URL: String
+  var info: EpisodeInfo?
+}
+struct EpisodeInfo: Codable {
+  var id: String
+  var title: String
+  var description: String
 }
 struct Podcast: Codable {
   var title: String
@@ -43,4 +49,38 @@ func readPodcastFile(nameFile: String) -> Podcast {
     explicit: false,
     episodes: []
     )
+}
+
+func readEpisodFile(nameFile: String) -> EpisodeInfo {
+   var data: Data = Data()
+  do {
+    let fileUrl = URL(fileURLWithPath: nameFile)
+    data = try Data(contentsOf: fileUrl)
+  } catch {
+    print("Unexpected file read error:\(error)")
+  }
+  do {
+    let episode = try JSONDecoder().decode(EpisodeInfo.self, from: data)
+    return episode
+  } catch {
+    print("Unexpecting decoder error \(error)")
+  }
+  return EpisodeInfo(
+    id: "",
+    title: "",
+    description: ""
+  )
+ }
+
+func addEpisodeInfo( podcast: Podcast, downloadFolder: String) -> Podcast {
+  var episodeList: [Episode] = []
+  for var elem in podcast.episodes {
+    let episodeFileName = downloadFolder + "/" + elem.name + ".info.json"
+    let episodeInfo = readEpisodFile(nameFile: episodeFileName)
+    elem.info = episodeInfo
+    episodeList.append(elem)
+  }
+  var newPodcast = podcast
+  newPodcast.episodes = episodeList
+  return newPodcast
 }

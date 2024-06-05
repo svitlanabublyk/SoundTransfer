@@ -13,14 +13,19 @@ struct SoundTransfer: ParsableCommand {
     var downloadFolder: String = "."
 
     mutating func run() throws {
+        // Read podcasts
         let listOfNamesFile: String = "listOfSounds.json"
         let podcast = readPodcastFile(nameFile: listOfNamesFile)
-        let xml = generateXML(podcast: podcast)
-        let xmlFileName = downloadFolder + "/" + "podcast.xml"
-        writeXML(nameFile: xmlFileName, content: xml)
+        // Download podcasts
+        download(listOfNamesFile, downloadFolder)
 
-        // download(listOfNamesFile, downloadFolder)
+        // Read EpisodInfo
+       let podcastWithInfo = addEpisodeInfo(podcast: podcast, downloadFolder: downloadFolder)
+       print(podcastWithInfo)
 
+        // let xml = generateXML(podcast: podcast)
+        // let xmlFileName = downloadFolder + "/" + "podcast.xml"
+        // writeXML(nameFile: xmlFileName, content: xml)
     }
 }
 
@@ -41,7 +46,7 @@ func downloadFile(nameFile: String, urlYouTube: String) {
     task.standardOutput = pipeOut
     let pipeError = Pipe()
     task.standardError = pipeError
-    let options = ["--output", nameFile, "--extract-audio", "--audio-format", "mp3", urlYouTube]
+    let options = ["--output", nameFile, "--extract-audio", "--audio-format", "mp3", "--write-info-json", urlYouTube]
     task.arguments = options
 
     do {
