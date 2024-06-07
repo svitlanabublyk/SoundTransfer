@@ -20,12 +20,12 @@ struct SoundTransfer: ParsableCommand {
         download(listOfNamesFile, downloadFolder)
 
         // Read EpisodInfo
-       let podcastWithInfo = addEpisodeInfo(podcast: podcast, downloadFolder: downloadFolder)
-       print(podcastWithInfo)
+        let podcastWithInfo = addEpisodeInfo(podcast: podcast, downloadFolder: downloadFolder)
+       // print(podcastWithInfo)
 
-        // let xml = generateXML(podcast: podcast)
-        // let xmlFileName = downloadFolder + "/" + "podcast.xml"
-        // writeXML(nameFile: xmlFileName, content: xml)
+        let xml = generateXML(podcast: podcastWithInfo)
+        let xmlFileName = downloadFolder + "/" + "podcast.xml"
+        writeXML(nameFile: xmlFileName, content: xml)
     }
 }
 
