@@ -1,12 +1,26 @@
+import RegexBuilder
+import Foundation
+
 func generateXML( podcast: Podcast) -> String {
   let explicit = podcast.explicit ? "True" : "False"
+  var newDescription = podcast.description
+  if #available(macOS 13.0, *) {
+    do {
+      let regEx = try Regex("\\?[a-zA-Z0-9_=&#]+")
+      newDescription.replace(regEx, with: "")
+    } catch {
+      print("Error making regEx:\(error)")
+    }
+  }
   let episode = episodeXML( p: podcast)
   let rss = """
       <?xml version="1.0" encoding="UTF-8"?>
       <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
       <channel>
         <title>\(podcast.title)</title>
-        <description>\(podcast.description)</description>
+        <description>
+        \(newDescription)
+        </description>
         <link>\(podcast.link)</link>
         <language>\(podcast.language)</language>
         <copyright></copyright>
@@ -39,12 +53,23 @@ func episodeXML(p podcast: Podcast) -> String {
   var newEpisodes = ""
   for episode in podcast.episodes {
     if let unwrappedInfo = episode.info {
+      var newDescription = unwrappedInfo.description
+      if #available(macOS 13.0, *) {
+        do {
+          let regEx = try Regex("\\?[a-zA-Z0-9_=&#]+")
+          newDescription.replace(regEx, with: "")
+        } catch {
+          print("Error making regEx:\(error)")
+        }
+      }
       let eps = """
       <item>
         <title>\(unwrappedInfo.title)</title>
         <itunes:author></itunes:author>
         <itunes:subtitle></itunes:subtitle>
-        <description>\(unwrappedInfo.description)</description>
+        <description>
+        \(newDescription)
+        </description>
         <itunes:image href="" />
         <enclosure url="/\(episode.name)" length="" type="audio/mpeg"/>
         <guid>\(unwrappedInfo.id)</guid>
