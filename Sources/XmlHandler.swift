@@ -9,7 +9,7 @@ func generateXML( podcast: Podcast) -> String {
       let regEx = try Regex("\\?[a-zA-Z0-9_=&#]+")
       newDescription.replace(regEx, with: "")
     } catch {
-      print("Error making regEx:\(error)")
+      writeLog(message: "Error making regEx:\(error)", logLevel: .error)
     }
   }
   let episode = episodeXML( p: podcast)
@@ -45,7 +45,7 @@ func writeXML( nameFile: String, content: String) {
    do {
      try content.write(toFile: nameFile, atomically: true, encoding: String.Encoding.utf8)
    } catch {
-     print("Error writihg XMLfile \(error)")
+     writeLog(message: "Error writihg XMLfile \(error)", logLevel: .error)
    }
 }
 
@@ -59,7 +59,7 @@ func episodeXML(p podcast: Podcast) -> String {
           let regEx = try Regex("\\?[a-zA-Z0-9_=&#]+")
           newDescription.replace(regEx, with: "")
         } catch {
-          print("Error making regEx:\(error)")
+          writeLog(message: "Error making regEx:\(error)", logLevel: .error)
         }
       }
       let eps = """
@@ -71,7 +71,7 @@ func episodeXML(p podcast: Podcast) -> String {
         \(newDescription)
         </description>
         <itunes:image href="" />
-        <enclosure url="/\(episode.name)" length="" type="audio/mpeg"/>
+        <enclosure url="\(podcast.baseURL)/\(episode.name)" length="" type="audio/mpeg"/>
         <guid>\(unwrappedInfo.id)</guid>
         <pubDate></pubDate>
         <itunes:duration></itunes:duration>

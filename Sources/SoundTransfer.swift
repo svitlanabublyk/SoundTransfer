@@ -6,13 +6,27 @@
 
 import ArgumentParser
 import Foundation
+import OSLog
+
+enum LogLevel {
+    case debug
+    case info
+    case notice
+    case error
+    case fault
+}
+var printLogTerminal: Bool = false
 
 @main
 struct SoundTransfer: ParsableCommand {
     @Option(help: "Download files to following folder")
     var downloadFolder: String = "."
+    @Flag(help: "Print log messages to terminal")
+    var printLog: Bool = false
 
     mutating func run() throws {
+        printLogTerminal = printLog
+        writeLog(message: "Application started", logLevel: .notice)
         // Read podcasts
         let listOfNamesFile: String = "listOfSounds.json"
         let podcast = readPodcastFile(nameFile: listOfNamesFile)
@@ -26,6 +40,30 @@ struct SoundTransfer: ParsableCommand {
         let xml = generateXML(podcast: podcastWithInfo)
         let xmlFileName = downloadFolder + "/" + "podcast.xml"
         writeXML(nameFile: xmlFileName, content: xml)
+    }
+}
+
+func writeLog( message: String, logLevel: LogLevel) {
+    if #available(OSX 11.0, *) {
+        if printLogTerminal {
+            print(message)
+        } else {
+            let logger = Logger()
+            switch logLevel {
+            case .debug:
+                logger.debug("\(message, privacy: .public)")
+            case .info:
+                logger.info("\(message, privacy: .public)")
+            case .notice:
+                logger.notice("\(message, privacy: .public)")
+            case .error:
+                logger.error("\(message, privacy: .public)")
+            case .fault:
+                logger.fault("\(message, privacy: .public)")
+            }
+        }
+    } else {
+        print("\(message)")
     }
 }
 
@@ -53,7 +91,7 @@ func downloadFile(nameFile: String, urlYouTube: String) {
         try task.run()
         task.waitUntilExit()
     } catch {
-        print("Unexpected error: \(error)")
+        writeLog(message: "Unexpected error: \(error)", logLevel: .error)
     }
 
     let out = pipeOut.fileHandleForReading.readDataToEndOfFile()
@@ -62,8 +100,8 @@ func downloadFile(nameFile: String, urlYouTube: String) {
     let outString = String(data: out, encoding: String.Encoding.utf8) ?? ""
     let errString = String(data: err, encoding: String.Encoding.utf8) ?? ""
 
-    print(outString)
-    print(errString)
+    writeLog(message: outString, logLevel: .notice)
+    writeLog(message: errString, logLevel: .notice)
 
-    print("File downloaded ")
+    writeLog(message: "File downloaded ", logLevel: .notice)
 }

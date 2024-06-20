@@ -20,6 +20,7 @@ struct Podcast: Codable {
   var image: String
   var category: String
   var explicit: Bool
+  var baseURL: String
   var episodes: [Episode]
 }
 
@@ -29,13 +30,13 @@ func readPodcastFile(nameFile: String) -> Podcast {
     let fileUrl = URL(fileURLWithPath: nameFile)
     data = try Data(contentsOf: fileUrl)
   } catch {
-    print("Unexpected file read error:\(error)")
+    writeLog(message: "Unexpected file read error:\(error)", logLevel: .error)
   }
   do {
     let podcast = try JSONDecoder().decode(Podcast.self, from: data)
     return podcast
   } catch {
-    print("Unexpecting decoder error \(error)")
+    writeLog(message: "Unexpecting decoder error \(error)", logLevel: .error)
   }
   return Podcast(
     title: "",
@@ -47,6 +48,7 @@ func readPodcastFile(nameFile: String) -> Podcast {
     image: "",
     category: "",
     explicit: false,
+    baseURL: "",
     episodes: []
     )
 }
@@ -57,13 +59,13 @@ func readEpisodFile(nameFile: String) -> EpisodeInfo {
     let fileUrl = URL(fileURLWithPath: nameFile)
     data = try Data(contentsOf: fileUrl)
   } catch {
-    print("Unexpected file read error:\(error)")
+    writeLog(message: "Unexpected file read error:\(error)", logLevel: .error)
   }
   do {
     let episode = try JSONDecoder().decode(EpisodeInfo.self, from: data)
     return episode
   } catch {
-    print("Unexpecting decoder error \(error)")
+    writeLog(message: "Unexpecting decoder error \(error)", logLevel: .error)
   }
   return EpisodeInfo(
     id: "",
