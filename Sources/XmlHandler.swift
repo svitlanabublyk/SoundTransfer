@@ -1,6 +1,23 @@
 import RegexBuilder
 import Foundation
 
+/**
+ Generates an XML representation of a podcast.
+
+ This function takes a `Podcast` object as input and generates an XML string that conforms to the iTunes 
+ podcast RSS feed format. It handles the conversion of various podcast properties into their corresponding 
+ XML elements. If the macOS version is 13.0 or later, it also removes query parameters from the podcast 
+ description using a regular expression.
+
+ - Parameters:
+    - podcast: The `Podcast` object containing the information to be converted to XML.
+
+ - Returns:
+    A `String` containing the XML representation of the podcast.
+
+ - Note:
+    The function logs errors to a logging system if regex creation or application fails.
+*/
 func generateXML( podcast: Podcast) -> String {
   let explicit = podcast.explicit ? "True" : "False"
   var newDescription = podcast.description
@@ -41,6 +58,19 @@ func generateXML( podcast: Podcast) -> String {
   return rss
 }
 
+/**
+ Writes XML content to a file.
+
+ This function takes a file name and a string containing XML content, and writes the content to the specified file.
+ If any error occurs during the write operation, an error is logged.
+
+ - Parameters:
+    - nameFile: The path to the file where the XML content should be written.
+    - content: The XML content to be written to the file.
+
+ - Note:
+    The function logs errors to a logging system if the file writing operation fails.
+*/
 func writeXML( nameFile: String, content: String) {
    do {
      try content.write(toFile: nameFile, atomically: true, encoding: String.Encoding.utf8)
@@ -49,6 +79,24 @@ func writeXML( nameFile: String, content: String) {
    }
 }
 
+/**
+ Generates XML representation of podcast episodes.
+
+ This function takes a `Podcast` object as input and generates an XML string for its episodes, 
+ formatted according to the iTunes podcast RSS feed specification. It iterates over each episode 
+ in the podcast, extracts relevant information, and constructs XML items for each episode. 
+ If the macOS version is 13.0 or later, it also removes query parameters from the episode descriptions 
+ using a regular expression.
+
+ - Parameters:
+    - podcast: The `Podcast` object containing the episodes to be converted to XML.
+
+ - Returns:
+    A `String` containing the XML representation of the podcast's episodes.
+
+ - Note:
+    The function logs errors to a logging system if regex creation or application fails.
+*/
 func episodeXML(p podcast: Podcast) -> String {
   var newEpisodes = ""
   for episode in podcast.episodes {

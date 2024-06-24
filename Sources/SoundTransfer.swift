@@ -8,6 +8,12 @@ import ArgumentParser
 import Foundation
 import OSLog
 
+/**
+ Represents the severity levels for logging messages.
+
+ The `LogLevel` enum defines various levels of log severity, allowing you to categorize and filter 
+ log messages based on their importance or severity.
+*/
 enum LogLevel {
     case debug
     case info
@@ -15,6 +21,8 @@ enum LogLevel {
     case error
     case fault
 }
+
+/// Global variable that represents output to terminal 
 var printLogTerminal: Bool = false
 
 @main
@@ -43,6 +51,21 @@ struct SoundTransfer: ParsableCommand {
     }
 }
 
+/**
+ Logs a message with a specified log level.
+
+ This function logs a message with the provided `LogLevel`. If running on macOS 11.0 or later,
+ it uses the `Logger` class to log messages according to the specified log level. For earlier versions
+ or if `printLogTerminal` is `true`, it prints the message to the terminal.
+
+ - Parameters:
+    - message: The message to be logged.
+    - logLevel: The severity level of the log message, specified as a `LogLevel` enum value.
+
+ - Note:
+    If `printLogTerminal` is `true`, the message is printed to the terminal regardless of the macOS version.
+    The function utilizes the `Logger` class for logging on macOS 11.0 or later.
+*/
 func writeLog( message: String, logLevel: LogLevel) {
     if #available(OSX 11.0, *) {
         if printLogTerminal {
@@ -67,6 +90,20 @@ func writeLog( message: String, logLevel: LogLevel) {
     }
 }
 
+/**
+ Downloads podcast episodes listed in a specified file to a designated folder.
+
+ This function reads a podcast's information from a file, iterates over each episode, 
+ and downloads the episode files to the specified folder.
+
+ - Parameters:
+    - listOfNamesFile: The path to the file containing the podcast information.
+    - folder: The folder where the episode files will be downloaded.
+
+ - Note:
+    The function uses `readPodcastFile(nameFile:)` to read the podcast information from the specified file,
+    and `downloadFile(nameFile:urlYouTube:)` to download each episode file.
+*/
 func download(_ listOfNamesFile: String, _ folder: String) {
     let podcast = readPodcastFile(nameFile: listOfNamesFile)
     for episode in podcast.episodes {
@@ -76,6 +113,21 @@ func download(_ listOfNamesFile: String, _ folder: String) {
     }
 }
 
+/**
+ Downloads a file from a specified YouTube URL using yt-dlp.
+
+ This function executes yt-dlp with specified options to download audio from a YouTube URL 
+ and save it to the specified file path. It logs the process output and any errors encountered 
+ during the download.
+
+ - Parameters:
+    - nameFile: The file path where the downloaded file should be saved.
+    - urlYouTube: The YouTube URL from which to download the audio.
+
+ - Note:
+    This function requires yt-dlp to be installed at `/usr/local/bin/yt-dlp` for execution.
+    It logs the download process output and errors using `writeLog(message:logLevel:)`.
+*/
 func downloadFile(nameFile: String, urlYouTube: String) {
     let task = Process()
     let executableUrl = URL(fileURLWithPath: "/usr/local/bin/yt-dlp")

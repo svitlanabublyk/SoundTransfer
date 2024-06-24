@@ -1,15 +1,36 @@
 import Foundation
 
+/**
+ Represents an episode of a podcast.
+
+ The `Episode` structure encapsulates information about a podcast episode,
+ including its name, URL, and optional detailed information (`EpisodeInfo`).
+ */
 struct Episode: Codable {
   var name: String
   var URL: String
   var info: EpisodeInfo?
 }
+
+/**
+ Detailed information about a podcast episode.
+
+ The `EpisodeInfo` structure provides specific details about a podcast episode,
+ including its unique identifier (`id`), title, and a detailed description.
+ */
 struct EpisodeInfo: Codable {
   var id: String
   var title: String
   var description: String
 }
+
+/**
+ Represents a podcast with its associated metadata and episodes.
+
+ The `Podcast` structure encapsulates various details about a podcast, including its title, author, 
+ language, and a list of episodes. It conforms to the `Codable` protocol, allowing for easy 
+ encoding and decoding from JSON.
+ */
 struct Podcast: Codable {
   var title: String
   var link: String
@@ -24,6 +45,23 @@ struct Podcast: Codable {
   var episodes: [Episode]
 }
 
+/**
+ Reads podcast information from a JSON file.
+
+ This function takes the path to a JSON file containing podcast information, reads the file's content,
+ and decodes it into a `Podcast` object. If any error occurs during file reading or JSON decoding, 
+ an error is logged and a default `Podcast` object is returned.
+
+ - Parameters:
+    - nameFile: The path to the JSON file containing the podcast information.
+
+ - Returns:
+    A `Podcast` object populated with data from the JSON file. If an error occurs, 
+    a default `Podcast` object with empty or default fields is returned.
+
+ - Note:
+    The function logs errors to a logging system if file reading or JSON decoding fails.
+*/
 func readPodcastFile(nameFile: String) -> Podcast {
   var data: Data = Data()
   do {
@@ -53,6 +91,23 @@ func readPodcastFile(nameFile: String) -> Podcast {
     )
 }
 
+/**
+ Reads episode information from a JSON file.
+
+ This function takes the path to a JSON file containing episode information, reads the file's content,
+ and decodes it into an `EpisodeInfo` object. If any error occurs during file reading or JSON decoding, 
+ an error is logged and a default `EpisodeInfo` object is returned.
+
+ - Parameters:
+    - nameFile: The path to the JSON file containing the episode information.
+
+ - Returns:
+    An `EpisodeInfo` object populated with data from the JSON file. If an error occurs, 
+    a default `EpisodeInfo` object with empty fields is returned.
+
+ - Note:
+    The function logs errors to a logging system if file reading or JSON decoding fails.
+*/
 func readEpisodFile(nameFile: String) -> EpisodeInfo {
    var data: Data = Data()
   do {
@@ -74,6 +129,24 @@ func readEpisodFile(nameFile: String) -> EpisodeInfo {
   )
  }
 
+/**
+ Adds additional information to each episode in a podcast.
+
+ This function takes a `Podcast` object and a `downloadFolder` path as input. 
+ It iterates over each episode in the podcast, reads corresponding episode information from a JSON file 
+ located in the specified download folder, and updates the episode's info attribute. 
+ The function then returns a new `Podcast` object with updated episodes.
+
+ - Parameters:
+    - podcast: The `Podcast` object containing episodes that need additional information.
+    - downloadFolder: The folder path where episode info JSON files are stored.
+
+ - Returns: 
+    A new `Podcast` object with each episode's info attribute updated based on the corresponding JSON file.
+
+ - Note:
+    The JSON files should be named as `<episodeName>.info.json` and located in the `downloadFolder`.
+*/
 func addEpisodeInfo( podcast: Podcast, downloadFolder: String) -> Podcast {
   var episodeList: [Episode] = []
   for var elem in podcast.episodes {
