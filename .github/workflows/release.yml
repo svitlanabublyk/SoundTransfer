@@ -15,7 +15,9 @@ jobs:
       - name: Build executable for release
         run: swift build -c release --arch arm64 --arch x86_64 --product SoundTransfer
       - name: Compress archive
-        run: tar -czf ${{ github.ref_name }}.tar.gz -C .build/apple/Products/Release SoundTransfer
+        run: 
+          #tar -czf ${{ github.ref_name }}.tar.gz -C .build/apple/Products/Release SoundTransfer
+          zip --junk-paths SoundTransfer .build/apple/Products/Release
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -24,3 +26,13 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           release_name: Release ${{ github.ref_name }}
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./SoundTransfer.zip
+          asset_name: SoundTransfer-${{ github.ref_name }}.zip
+          asset_content_type: application/zip
